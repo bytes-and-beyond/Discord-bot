@@ -3,9 +3,13 @@ const {REST, Routes} = require('discord.js');
 
 const commands = [
     {
-        name: 'Start-Meeting',
+        name: 'start-meeting', // can only contain lowercase letters, numbers, and hyphens
         description: 'Meeting started now!',
     },
+    {
+        name: 'end-meeting', 
+        description: 'Meeting ended now!',
+    }
 ];
 
 const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
