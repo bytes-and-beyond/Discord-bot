@@ -1,4 +1,5 @@
 require("dotenv").config();
+
 const { EmbedBuilder } = require('discord.js'); 
 const fs = require('fs/promises');
 const { Client, IntentsBitField, GatewayIntentBits } = require("discord.js");
@@ -22,6 +23,7 @@ client.on("messageCreate", (message) => {
   if (message.author.bot) return;
 
   if (message.content === "hello") {
+
     message.reply(`Hello ${message.author.displayName}, how can I help you?`);
   }
   else if (message.content === "keefak") {
@@ -37,15 +39,15 @@ const loadStartTime = async () => {
     const data = await fs.readFile('startTime.txt', 'utf-8'); 
     startTime = parseInt(data, 10);
   } catch (error) {
-    console.error('Error loading startTime:', error);
+    console.error("Error loading startTime:", error);
   }
 };
 
 const saveStartTime = async (newStartTime) => {
   try {
-    await fs.writeFile('startTime.txt', newStartTime.toString());
+    await fs.writeFile("startTime.txt", newStartTime.toString());
   } catch (error) {
-    console.error('Error saving startTime:', error);
+    console.error("Error saving startTime:", error);
   }
 };
 
@@ -53,15 +55,17 @@ client.on('interactionCreate', async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
   const Today = new Date();
   switch (interaction.commandName) {
-    case 'start-meeting':
+    case "start-meeting":
       startTime = Date.now();
+
       await saveStartTime(startTime);
       interaction.reply('Meeting just started!');
+
       break;
 
-    case 'end-meeting':
+    case "end-meeting":
       if (!startTime) {
-        interaction.reply('No meeting in progress!');
+        interaction.reply("No meeting in progress!");
         return;
       }
       const endTime = Date.now();
@@ -75,18 +79,14 @@ client.on('interactionCreate', async (interaction) => {
         .filter(([displayName, joinTime]) => (endTime - joinTime) >= 300000) // 5 mins in milliseconds
         .map(([displayName]) => displayName);
 
-      const meetingEmbed = new EmbedBuilder()
-        .setColor(0x0099ff) 
-        .setTitle('**Meeting Summary**')
-        .addFields(
-          { name: '📅 Date:', value: formattedDate, inline: true },
-          { name: '⏲️ Time:', value: formattedTime, inline: true },
-          { name: '⌚ Duration:', value: `${minutes} min`, inline: false },
-          { name: '📍 Location:', value: 'Voice Channel', inline: false },
-          { name: '👥 Attendees (5+ mins):', value: attendeesList.length > 0 ? attendeesList.join(', ') : 'None', inline: false }
-        );
+      interaction.reply(`# **Meeting Summary**
+        📅 **Date:** ${formattedDate}
+        ⏲️ **Time:** ${formattedTime}
+        ⌚ **Duration:** ${minutes} min
+        📍 **Location:** Voice Channel
+         # **👥 Attendees (5+ mins):** attendeesList.length > 0 ? attendeesList.join(', ') : 'None'
+        `);
 
-      interaction.reply({ embeds: [meetingEmbed] });
       startTime = null;
       attendees.clear(); //clearing the attendees map when ending the meeting
       break;
