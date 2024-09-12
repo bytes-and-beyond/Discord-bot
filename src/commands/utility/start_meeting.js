@@ -1,27 +1,23 @@
-require("dotenv").config();
-const {REST, Routes} = require('discord.js');
+const {SlashCommandBuilder} = require('discord.js');
+const fs = require('fs/promises');
 
-const commands = [
-    {
-        name: 'start-meeting', // can only contain lowercase letters, numbers, and hyphens
-        description: 'Meeting started now!',
+module.exports = {
+    data: new SlashCommandBuilder()
+        .setName('start-meeting')
+        .setDescription('Meeting started now!'),
+    async execute(interaction) {
+        if (!interaction.isChatInputCommand()) return;
+        
+        startTime = Date.now();
+        await saveStartTime(startTime);
+        await interaction.reply('Meeting just started!');
     },
-    {
-        name: 'end-meeting', 
-        description: 'Meeting ended now!',
-    }
-];
+};
 
-const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
-(async () => {
+const saveStartTime = async (newStartTime) => { // for starting the meeting
   try {
-    console.log('Registring slash commands');
-    await rest.put(
-      Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.GUILD_ID),
-      { body: commands },
-    );
-    console.log('Successfully registered application commands');
+    await fs.writeFile("startTime.txt", newStartTime.toString());
   } catch (error) {
-    console.log(`There was an error: ${error}`);
+    console.error("Error saving startTime:", error);
   }
-})();
+};
