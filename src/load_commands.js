@@ -2,7 +2,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const {Collection} = require('discord.js');
 
-//** This code snippet is used to load all the commands from the commands directory */
+//** This code snippet is used to load all the commands from the commands directory when the bot is running */
 module.exports = {
     async execute(client) {
         client.commands = new Collection(); // Collection for managing the commands
