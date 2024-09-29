@@ -1,4 +1,8 @@
 require("dotenv").config();
+const express = require('express');
+const fs = require('fs');
+const app = express();
+app.use(express.json());
 
 const { Client,
         IntentsBitField, 
@@ -108,6 +112,44 @@ client.on('voiceStateUpdate', (oldState, newState) => {
   if (oldState.channelId === channelID && !newState.channelId) {
     attendees.delete(oldState.member.user.displayName);
     console.log(`${oldState.member.user.displayName} left the meeting.`);
+  }
+});
+
+
+
+// app.post('/update-form', async (req, res) => {
+//   try {
+//     const formData = req.body;
+
+//     if (!formData || !formData.notes || !formData.future_tasks) {
+//       return res.status(400).send('Bad Request: Missing fields');
+//     }
+
+//     await fs.writeFile('Form.json', JSON.stringify(formData, null, 2));
+    
+//     res.status(200).send('Form data updated successfully');
+
+//   } catch (err) {
+//     console.error("Error writing to Form.json:", err);
+//     res.status(500).send('Internal Server Error');
+//   }
+// });
+
+app.post('/update-form', async (req, res) => {
+  try {
+    const formData = req.body;
+
+    if (!formData || !formData.notes || !formData.future_tasks) {
+      return res.status(400).send('Bad Request: Missing fields');
+    }
+
+    await fs.writeFile('Form.json', JSON.stringify(formData, null, 2));
+    
+    res.status(200).send('Form data updated successfully');
+
+  } catch (err) {
+    console.error("Error writing to Form.json:", err);
+    res.status(500).send('Internal Server Error');
   }
 });
 
