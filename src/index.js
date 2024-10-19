@@ -135,22 +135,22 @@ client.on('voiceStateUpdate', (oldState, newState) => {
 //   }
 // });
 
-app.post('/update-form', async (req, res) => {
-  try {
-    const formData = req.body;
+// app.post('/update-form', async (req, res) => {
+//   try {
+//     const formData = req.body;
 
-    if (!formData || !formData.notes || !formData.future_tasks) {
-      return res.status(400).send('Bad Request: Missing fields');
-    }
+//     if (!formData || !formData.notes || !formData.future_tasks) {
+//       return res.status(400).send('Bad Request: Missing fields');
+//     }
 
-    await fs.writeFile('Form.json', JSON.stringify(formData, null, 2));
+//     await fs.writeFile('Form.json', JSON.stringify(formData, null, 2));
     
-    res.status(200).send('Form data updated successfully');
+//     res.status(200).send('Form data updated successfully');
 
-  } catch (err) {
-    console.error("Error writing to Form.json:", err);
-    res.status(500).send('Internal Server Error');
-  }
-});
+//   } catch (err) {
+//     console.error("Error writing to Form.json:", err);
+//     res.status(500).send('Internal Server Error');
+//   }
+// });
 
 client.login(process.env.TOKEN);
