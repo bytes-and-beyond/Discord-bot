@@ -112,64 +112,64 @@ client.on('voiceStateUpdate', (oldState, newState) => {
 });
 
 
-const service = google.sheets("v4");
-const credentials = require("../Form_101.json");
-// Configure auth client
-const authClient = new google.auth.JWT(
-    credentials.client_email,
-    null,
-    credentials.private_key.replace(/\\n/g, "\n"),
-    ["https://www.googleapis.com/auth/spreadsheets"]
-);
+// const service = google.sheets("v4");
+// const credentials = require("../Form_101.json");
+// // Configure auth client
+// const authClient = new google.auth.JWT(
+//     credentials.client_email,
+//     null,
+//     credentials.private_key.replace(/\\n/g, "\n"),
+//     ["https://www.googleapis.com/auth/spreadsheets"]
+// );
 
-(async function () {
-    try { 
-        // Authorize the client
-        const token = await authClient.authorize();
-        // Set the client credentials
-        authClient.setCredentials(token);
+// (async function () {
+//     try { 
+//         // Authorize the client
+//         const token = await authClient.authorize();
+//         // Set the client credentials
+//         authClient.setCredentials(token);
 
-        // Get the rows
-        const res = await service.spreadsheets.values.get({
-            auth: authClient,
-            spreadsheetId: "1GyvhxGdu6wgqnWoIcZBdhPZflyABChLw431eO_RfB1k",
-            range: "A:E",
-        });
+//         // Get the rows
+//         const res = await service.spreadsheets.values.get({
+//             auth: authClient,
+//             spreadsheetId: "1GyvhxGdu6wgqnWoIcZBdhPZflyABChLw431eO_RfB1k",
+//             range: "A:E",
+//         });
 
-        // All of the answers
-        const answers = [];
-        // Set rows to equal the rows
-        const rows = res.data.values;
+//         // All of the answers
+//         const answers = [];
+//         // Set rows to equal the rows
+//         const rows = res.data.values;
 
-        // Check if we have any data and if we do add it to our answers array
-        if (rows.length) {
-            // Remove the headers
-            rows.shift()
-            // For each row
-            const lastRow = rows[rows.length - 1];
-            answers.push({
-                notes: lastRow[1],
-                future_tasks: lastRow[2],
-                Next_meeting: lastRow[3],
-                Next_Location: lastRow[4],
-              });
-        } else {
-            console.log("No data found.");  
-        }
+//         // Check if we have any data and if we do add it to our answers array
+//         if (rows.length) {
+//             // Remove the headers
+//             rows.shift()
+//             // For each row
+//             const lastRow = rows[rows.length - 1];
+//             answers.push({
+//                 notes: lastRow[1],
+//                 future_tasks: lastRow[2],
+//                 Next_meeting: lastRow[3],
+//                 Next_Location: lastRow[4],
+//               });
+//         } else {
+//             console.log("No data found.");  
+//         }
 
-        // Saved the answers
-        fs.writeFileSync("answers.json", JSON.stringify(answers), function (err, file) {
-            if (err) throw err;
-            console.log("Saved!");
-        });
+//         // Saved the answers
+//         fs.writeFileSync("answers.json", JSON.stringify(answers), function (err, file) {
+//             if (err) throw err;
+//             console.log("Saved!");
+//         });
 
-    } catch (error) {
-        // Log the error
-        console.log(error);
-        // Exit the process with error
-        process.exit(1);
-    }
-})();
+//     } catch (error) {
+//         // Log the error
+//         console.log(error);
+//         // Exit the process with error
+//         process.exit(1);
+//     }
+// })();
 
 
 client.login(process.env.TOKEN);
