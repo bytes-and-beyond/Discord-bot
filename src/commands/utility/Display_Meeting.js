@@ -22,7 +22,7 @@ async function readEndMeetingFile() {
 
 async function readFormFile() {
     try {
-        const data1 = await fs.readFile('Form_101.json', 'utf-8');
+        const data1 = await fs.readFile('answers.json', 'utf-8');
         return JSON.parse(data1);
     } catch (error) {
         console.error("Error reading End_meeting.json file:", error);
@@ -43,8 +43,12 @@ module.exports = {
 
         // Access stored webhook data
         const data1 = await readFormFile();
-        const { notes = 'No notes provided', future_tasks = 'No tasks provided', next_meeting = 'No meeting scheduled', next_location = 'No location provided' } = data1;
-
+        const {
+            notes = 'No notes provided',
+            future_tasks = 'No tasks provided',
+            Next_meeting: next_meeting = 'No meeting scheduled',
+            Next_Location: next_location = 'No location provided'
+        } = data1;
         // Create the response message
         const responseMessage = `
             # **Meeting Summary**

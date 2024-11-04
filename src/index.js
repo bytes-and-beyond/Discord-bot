@@ -94,20 +94,16 @@ client.on('voiceStateUpdate', (oldState, newState) => {
    * 
   */
   console.log('Voice state updated');
-
   if (!startTime) {
     console.log('No meeting is in progress.');
     return; 
   }
-
   const channelID = '1278936251914911749'; // Voice channel ID
-
   // When a user joins the meeting
   if (!oldState.channelId && newState.channelId === channelID) {
     attendees.set(newState.member.user.displayName, Date.now());
     console.log(`${newState.member.user.displayName} joined the meeting.`);
   }
-
   // When a user leaves the meeting
   if (oldState.channelId === channelID && !newState.channelId) {
     attendees.delete(oldState.member.user.displayName);
@@ -117,7 +113,7 @@ client.on('voiceStateUpdate', (oldState, newState) => {
 
 
 const service = google.sheets("v4");
-const credentials = require("./credentials.json");
+const credentials = require("../Form_101.json");
 // Configure auth client
 const authClient = new google.auth.JWT(
     credentials.client_email,
@@ -142,21 +138,21 @@ const authClient = new google.auth.JWT(
 
         // All of the answers
         const answers = [];
-
         // Set rows to equal the rows
         const rows = res.data.values;
 
         // Check if we have any data and if we do add it to our answers array
         if (rows.length) {
-
             // Remove the headers
             rows.shift()
-
             // For each row
-            for (const row of rows) {
-                answers.push({ timeStamp: row[0], answer: row[1] });
-            }
-
+            const lastRow = rows[rows.length - 1];
+            answers.push({
+                notes: lastRow[1],
+                future_tasks: lastRow[2],
+                Next_meeting: lastRow[3],
+                Next_Location: lastRow[4],
+              });
         } else {
             console.log("No data found.");  
         }
@@ -168,15 +164,11 @@ const authClient = new google.auth.JWT(
         });
 
     } catch (error) {
-
         // Log the error
         console.log(error);
-
         // Exit the process with error
         process.exit(1);
-
     }
-
 })();
 
 
