@@ -22,7 +22,7 @@ async function readEndMeetingFile() {
 
 async function readFormFile() {
     try {
-        const data1 = await fs.readFile('Form.json', 'utf-8');
+        const data1 = await fs.readFile('Form_101.json', 'utf-8');
         return JSON.parse(data1);
     } catch (error) {
         console.error("Error reading End_meeting.json file:", error);
@@ -30,19 +30,6 @@ async function readFormFile() {
     }
 }
 
-// Setup webhook route
-// app.post('/webhook', async (req, res) => {
-//     const formData = req.body;
-//     const { notes, future_tasks, next_meeting, next_location } = formData;
-
-//     // Update the last meeting data
-//     lastMeetingData = { notes, future_tasks, next_meeting, next_location };
-
-//     console.log('Data received and updated:', lastMeetingData);
-//     res.status(200).send('Data received and updated');
-// });
-// Start listening on the webhook for form data submissions
-//app.listen(3000, () => console.log('Webhook is listening on port 3000'));
 
 module.exports = {
     data: new SlashCommandBuilder()

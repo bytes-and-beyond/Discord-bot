@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require('express');
 const fs = require('fs');
 const app = express();
-app.use(express.json());
+const { google } = require("googleapis");
 
 const { Client,
         IntentsBitField, 
@@ -116,41 +116,68 @@ client.on('voiceStateUpdate', (oldState, newState) => {
 });
 
 
+const service = google.sheets("v4");
+const credentials = require("./credentials.json");
+// Configure auth client
+const authClient = new google.auth.JWT(
+    credentials.client_email,
+    null,
+    credentials.private_key.replace(/\\n/g, "\n"),
+    ["https://www.googleapis.com/auth/spreadsheets"]
+);
 
-// app.post('/update-form', async (req, res) => {
-//   try {
-//     const formData = req.body;
+(async function () {
+    try { 
+        // Authorize the client
+        const token = await authClient.authorize();
+        // Set the client credentials
+        authClient.setCredentials(token);
 
-//     if (!formData || !formData.notes || !formData.future_tasks) {
-//       return res.status(400).send('Bad Request: Missing fields');
-//     }
+        // Get the rows
+        const res = await service.spreadsheets.values.get({
+            auth: authClient,
+            spreadsheetId: "1GyvhxGdu6wgqnWoIcZBdhPZflyABChLw431eO_RfB1k",
+            range: "A:E",
+        });
 
-//     await fs.writeFile('Form.json', JSON.stringify(formData, null, 2));
-    
-//     res.status(200).send('Form data updated successfully');
+        // All of the answers
+        const answers = [];
 
-//   } catch (err) {
-//     console.error("Error writing to Form.json:", err);
-//     res.status(500).send('Internal Server Error');
-//   }
-// });
+        // Set rows to equal the rows
+        const rows = res.data.values;
 
-// app.post('/update-form', async (req, res) => {
-//   try {
-//     const formData = req.body;
+        // Check if we have any data and if we do add it to our answers array
+        if (rows.length) {
 
-//     if (!formData || !formData.notes || !formData.future_tasks) {
-//       return res.status(400).send('Bad Request: Missing fields');
-//     }
+            // Remove the headers
+            rows.shift()
 
-//     await fs.writeFile('Form.json', JSON.stringify(formData, null, 2));
-    
-//     res.status(200).send('Form data updated successfully');
+            // For each row
+            for (const row of rows) {
+                answers.push({ timeStamp: row[0], answer: row[1] });
+            }
 
-//   } catch (err) {
-//     console.error("Error writing to Form.json:", err);
-//     res.status(500).send('Internal Server Error');
-//   }
-// });
+        } else {
+            console.log("No data found.");  
+        }
+
+        // Saved the answers
+        fs.writeFileSync("answers.json", JSON.stringify(answers), function (err, file) {
+            if (err) throw err;
+            console.log("Saved!");
+        });
+
+    } catch (error) {
+
+        // Log the error
+        console.log(error);
+
+        // Exit the process with error
+        process.exit(1);
+
+    }
+
+})();
+
 
 client.login(process.env.TOKEN);
